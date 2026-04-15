@@ -1,0 +1,30 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:15
+    container_name: neomarket_db
+    restart: always
+    environment:
+      POSTGRES_DB: neomarket
+      POSTGRES_USER: neomarket
+      POSTGRES_PASSWORD: neomarket
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  web:
+    build: .
+    container_name: neomarket_web
+    restart: always
+    command: sh -c "python src/manage.py migrate && python src/manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+
+volumes:
+  postgres_data:
